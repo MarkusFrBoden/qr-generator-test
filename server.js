@@ -31,7 +31,7 @@ app.get('/qr', async (req, res) => {
       input.dispatchEvent(new Event('input', { bubbles: true }));
     }, data);
 
-    await page.waitForTimeout(1500);
+    await new Promise(resolve => setTimeout(resolve, 2000));
 
     const hasSvg = (await page.$('#qr-code svg')) !== null;
 
