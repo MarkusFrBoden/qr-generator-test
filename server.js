@@ -160,8 +160,8 @@ app.get('/qr', async (req, res) => {
     }, data);
 
     // Warte kurz, bis SVG gerendert wurde
-    await page.waitForSelector('#qr-code svg', { timeout: 50 });
-    await page.waitForTimeout(50);
+    await page.waitForSelector('#qr-code svg', { timeout: 1000 });
+    await page.waitForTimeout(500);
 
     // Hole das SVG-Element aus dem DOM
     const svg = await page.$eval('#qr-code svg', el => el.outerHTML);
