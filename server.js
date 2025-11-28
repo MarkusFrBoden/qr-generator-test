@@ -62,7 +62,6 @@ app.listen(port, () => {
 });
 */
 
-/*
 const express = require('express');
 const puppeteer = require('puppeteer');
 const chromium = require('@sparticuz/chromium');
@@ -96,17 +95,11 @@ app.get('/qr', async (req, res) => {
       input.dispatchEvent(new Event('input', { bubbles: true }));
     }, data);
 
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     const hasSvg = (await page.$('#qr-code svg')) !== null;
 
-    if (hasSvg) {
-      const svg = await page.$eval('#qr-code svg', el => el.outerHTML);
-      res.setHeader('Content-Type', 'image/svg+xml');
-      return res.send(svg);
-    }
-
-    await page.waitForSelector('#qr-code canvas', { timeout: 5000 });
+    await page.waitForSelector('#qr-code canvas', { timeout: 500 });
     const dataUrl = await page.$eval('#qr-code canvas', canvas => canvas.toDataURL());
     const base64Data = dataUrl.replace(/^data:image\/png;base64,/, '');
 
@@ -123,8 +116,9 @@ app.get('/qr', async (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server läuft auf http://localhost:${port}`);
-});*/
+});
 
+/* SVG BUT NOT IN ECXEL 
 const express = require('express');
 const puppeteer = require('puppeteer');
 const chromium = require('@sparticuz/chromium');
@@ -178,4 +172,4 @@ app.get('/qr', async (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server läuft auf http://localhost:${port}`);
-});
+}); */
