@@ -76,35 +76,38 @@ app.get('/qr', async (req, res) => {
   let browser;
   try {
     browser = await puppeteer.launch({
-  args: chromium.args,
-  defaultViewport: chromium.defaultViewport,
-  executablePath: await chromium.executablePath(),
-  headless: chromium.headless,
-});
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
+    });
 
     const page = await browser.newPage();
 
-    const url = `https://edih-qr-generator.vercel.app/index.html`;
+    const url = `https://qr.edih.digital/`;
     await page.goto(url, { waitUntil: 'networkidle0' });
 
     await page.waitForSelector('#url-input');
 
+    // Setze den Link ins Inputfeld und trigger das Event, damit QR-Code aktualisiert wird
     await page.evaluate((value) => {
       const input = document.getElementById('url-input');
       input.value = value;
       input.dispatchEvent(new Event('input', { bubbles: true }));
     }, data);
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Warte kurz, bis der QR-Code aktualisiert wurde
+    await new Promise(resolve => setTimeout(resolve, 500));
 
-    const hasSvg = (await page.$('#qr-code svg')) !== null;
+    // Wähle den Container mit dem QR-Code aus
+    const qrElement = await page.$('#qr-code');
+    if (!qrElement) throw new Error('QR-Code Container nicht gefunden');
 
-    await page.waitForSelector('#qr-code canvas', { timeout: 500 });
-    const dataUrl = await page.$eval('#qr-code canvas', canvas => canvas.toDataURL());
-    const base64Data = dataUrl.replace(/^data:image\/png;base64,/, '');
+    // Screenshot des Containers (PNG)
+    const pngBuffer = await qrElement.screenshot({ type: 'png' });
 
     res.setHeader('Content-Type', 'image/png');
-    res.send(Buffer.from(base64Data, 'base64'));
+    res.send(pngBuffer);
 
   } catch (error) {
     console.error('Fehler beim Generieren des QR-Codes:', error);
